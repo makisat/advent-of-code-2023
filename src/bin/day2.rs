@@ -6,6 +6,8 @@ fn main() {
         .expect("error reading input");
 
     part1(&input);
+
+    part2(&input);
 }
 
 fn part1(input: &str) {
@@ -80,5 +82,52 @@ fn part1(input: &str) {
         }
     }
 
-    println!("total: {}", total);
+    println!("part 1 answer: {}", total);
+}
+
+fn part2(input: &str) {
+    let mut total_sum = 0;
+    let mut current_line = 1;
+
+    let lines = input.lines();
+    for line in lines {
+        let mut largests: HashMap<&str, &str> = HashMap::new();
+
+        let id_content: Vec<&str> = line.split(": ").collect();
+
+        if current_line > 100 {
+            break;
+        } else {
+            current_line += 1;
+        }
+
+        let grabs: Vec<&str> = id_content[1].split("; ").collect();
+
+        for grab in grabs.iter() {
+            let colors: Vec<&str> = grab.split(", ").collect();
+            for color in colors.iter() {
+                let term: Vec<&str> = color.split(" ").collect();
+                
+                match largests.get(term[1]) {
+                    Some(val) => {
+                        let val = val.parse::<u32>().unwrap();
+                        let term_val = term[0];
+                        if val < term_val.parse::<u32>().unwrap() {
+                            largests.insert(term[1], term[0]);
+                        }
+                    }
+                    None =>  {
+                        largests.insert(term[1], term[0]);
+                    }
+                }
+            }
+        }
+        let mut line_product: u32 = 1;
+        for (_, val) in largests.iter() {
+            line_product = line_product * val.parse::<u32>().unwrap();
+        }
+
+        total_sum += line_product;
+    }
+    println!("part 2 answer: {}", total_sum);
 }
